@@ -37,7 +37,7 @@ class ATMTest {
     public void testIsCardInvalid(){
         when(mockBank.isCardLocked(1234)).thenReturn(true);
         atm.insertCard(bankCard);
-        assertFalse(atm.isCardPresent(), "The card should not be accepted since it is locked");
+        assertTrue(atm.isCardLocked(), "The card should not be accepted since it is locked");
     }
 
     @Test

@@ -18,29 +18,28 @@ public class ATM {
         return true;
     }
 
-    private boolean isCardLocked() {
+    public boolean isCardLocked() {
         if (bank.isCardLocked(bankCard.getCardId())) {
             System.out.println("Card is locked and cannot be used. isCardLocked()");
             return true;
+        }else {
+            System.out.println("Card is not locked. isCardLocked()");
+            return false;
         }
-        return false;
     }
 
     public void insertCard(BankCard card) {
-        if (bank.isCardLocked(card.getCardId())) {
-            System.out.println("Card is locked and cannot be used. insertCard()");
+        if (card == null) {
             this.bankCard = null;
         } else {
-            System.out.println("Card is not locked and can be used. insertCard()");
             this.bankCard = card;
         }
     }
 
     public boolean submitPin(String pinCode) {
         if (!isCardPresent()) return false;
-        isCardLocked();
 
-        if (bank.validatePin(bankCard.getCardId(), pinCode)) {
+        if (bank.validatePin(bankCard.getCardId(), pinCode) && !isCardLocked()) {
             //If correct user get access to the functionality of the ATM and failed attempts are reset
             bankCard.resetFailedAttempts();
             System.out.println("PinCode was correct. submitPin()");
@@ -61,15 +60,13 @@ public class ATM {
     }
 
     public void deposit(int cardId, double amount) {
-        if (isCardPresent()) {
-            isCardLocked();
+        if (isCardPresent() && !isCardLocked()) {
             bank.deposit(cardId, amount);
         }
     }
 
     public void withdraw(int cardId, double amount) {
-        if (isCardPresent() && bank.getBalance(cardId) >= amount) {
-            isCardLocked();
+        if (isCardPresent() && bank.getBalance(cardId) >= amount && !isCardLocked()) {
             bank.withdraw(cardId, amount);
         } else {
             System.out.println("Insufficient balance for withdrawal.");
@@ -77,7 +74,7 @@ public class ATM {
     }
 
     public double checkBalance() {
-        if (isCardPresent() && !isCardLocked()) {
+        if (!isCardLocked()) {
             return bank.getBalance(bankCard.getCardId());
         }
         System.out.println("Cannot check balance; no card present or card is locked.");
